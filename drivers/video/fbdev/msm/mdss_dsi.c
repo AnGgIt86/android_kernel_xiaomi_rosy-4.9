@@ -46,6 +46,7 @@ static struct mdss_dsi_data *mdss_dsi_res;
 #define DSI_ENABLE_PC_LATENCY PM_QOS_DEFAULT_VALUE
 
 static struct pm_qos_request mdss_dsi_pm_qos_request;
+bool is_Lcm_Present = false;
 
 void mdss_dump_dsi_debug_bus(u32 bus_dump_flag,
 	u32 **dump_mem)
@@ -405,6 +406,8 @@ end:
 	return ret;
 }
 
+int tp_gesture_onoff = 0;
+EXPORT_SYMBOL(tp_gesture_onoff);
 static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 {
 	int ret = 0;
@@ -3027,6 +3030,8 @@ static struct device_node *mdss_dsi_find_panel_of_node(
 					cfg_np_name, MDSS_MAX_PANEL_LEN);
 			}
 		}
+
+        is_Lcm_Present = true;
 
 		return dsi_pan_node;
 	}
