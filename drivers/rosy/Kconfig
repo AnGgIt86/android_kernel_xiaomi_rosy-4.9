@@ -11,4 +11,6 @@ config ARM_DT_OVERLAY_ROSY
 
 	  If unsure, say Y.
 
+source "drivers/rosy/touchscreen/Kconfig"
+
 endmenu
