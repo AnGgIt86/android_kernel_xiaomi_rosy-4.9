@@ -1869,6 +1869,10 @@ void msm_vfe47_cfg_axi_ub_equal_default(
 					axi_data->wm_image_size[i];
 			}
 		}
+        if (!total_image_size) {
+			pr_err("%s: Error total_image_size is 0\n", __func__);
+			return;
+		}
 		ub_offset = (axi_data->hw_info->num_rdi * 2) *
 			axi_data->hw_info->min_wm_ub;
 		prop_size = vfe_dev->hw_info->vfe_ops.axi_ops.
