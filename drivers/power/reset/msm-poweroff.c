@@ -166,7 +166,7 @@ static bool get_dload_mode(void)
 
 static void enable_emergency_dload_mode(void)
 {
-		pr_err("Failed to set secure EDLOAD mode: %d\n", ret);
+		pr_err("Failed to set secure EDLOAD mode: Xiaomi Required\n");
 }
 
 static int dload_set(const char *val, const struct kernel_param *kp)

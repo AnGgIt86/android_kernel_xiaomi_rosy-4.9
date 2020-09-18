@@ -278,6 +278,12 @@ static inline struct ion_handle *ion_import_dma_buf(struct ion_client *client,
 	return ERR_PTR(-ENODEV);
 }
 
+static inline struct ion_handle *ion_import_dma_buf_fd(struct ion_client *client,
+						    int fd)
+{
+	return ERR_PTR(-ENODEV);
+}
+
 static inline int ion_handle_get_flags(struct ion_client *client,
 				       struct ion_handle *handle,
 				       unsigned long *flags)

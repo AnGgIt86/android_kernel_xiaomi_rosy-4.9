@@ -923,7 +923,7 @@ static void read_usb_type(struct smbchg_chip *chip, char **usb_type_name,
 	*usb_supply_type = get_usb_supply_type(type);
 
     if (chip->Incorrect_type_cnt > 1) {
-		rc = chip->usb_psy->get_property(chip->usb_psy,
+		rc = power_supply_get_property(chip->usb_psy,
 				POWER_SUPPLY_PROP_REAL_TYPE, &prop);
 		if (!rc && is_usb_present(chip)) {
 			pr_smb(PR_MISC,
