@@ -4222,6 +4222,8 @@ static void check_gain_compensation(struct fg_chip *chip)
 	}
 }
 
+#define WARNTEMP	30
+#define COOLTEMP	10
 static void fg_hysteresis_config(struct fg_chip *chip)
 {
 	int hard_hot = 0, hard_cold = 0;
