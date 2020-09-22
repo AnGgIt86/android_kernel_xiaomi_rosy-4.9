@@ -59,6 +59,20 @@ static bool __power_supply_is_supplied_by(struct power_supply *supplier,
 	return false;
 }
 
+int power_supply_get_battery_charge_state(struct power_supply *psy)
+{
+	union power_supply_propval ret = {0, };
+
+	if (!psy)
+		pr_err("%s: power supply is NULL\n", __func__);
+
+	if (psy->get_property)
+		psy->get_property(psy, POWER_SUPPLY_PROP_PRESENT, &ret);
+
+	return ret.intval;
+}
+EXPORT_SYMBOL(power_supply_get_battery_charge_state);
+
 static int __power_supply_changed_work(struct device *dev, void *data)
 {
 	struct power_supply *psy = data;
