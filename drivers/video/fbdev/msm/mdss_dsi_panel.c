@@ -36,7 +36,7 @@
 
 #define VSYNC_DELAY msecs_to_jiffies(17)
 
-extern char Lcm_name[HARDWARE_MAX_ITEM_LONGTH];
+char Lcm_name[HARDWARE_MAX_ITEM_LONGTH];
 extern bool is_Lcm_Present;
 
 DEFINE_LED_TRIGGER(bl_led_trigger);
