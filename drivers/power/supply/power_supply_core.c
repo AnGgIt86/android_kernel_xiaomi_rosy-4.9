@@ -66,8 +66,7 @@ int power_supply_get_battery_charge_state(struct power_supply *psy)
 	if (!psy)
 		pr_err("%s: power supply is NULL\n", __func__);
 
-	if (psy->get_property)
-		psy->get_property(psy, POWER_SUPPLY_PROP_PRESENT, &ret);
+	power_supply_get_property(psy, POWER_SUPPLY_PROP_PRESENT, &ret);
 
 	return ret.intval;
 }

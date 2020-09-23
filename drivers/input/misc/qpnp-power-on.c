@@ -160,7 +160,7 @@
 
 #define QPNP_POFF_REASON_UVLO			13
 
-extern char board_id[HARDWARE_MAX_ITEM_LONGTH];
+char board_id[HARDWARE_MAX_ITEM_LONGTH];
 
 enum qpnp_pon_version {
 	QPNP_PON_GEN1_V1,
@@ -512,14 +512,13 @@ static DEVICE_ATTR(debounce_us, 0664, qpnp_pon_dbc_show, qpnp_pon_dbc_store);
 static ssize_t qpnp_kpdpwr_reset_show(struct device *dev,
 				      struct device_attribute *attr, char *buf)
 {
-	u8 val;
+	uint val;
 	int rc;
 	struct qpnp_pon *pon = dev_get_drvdata(dev);
 
-	rc = spmi_ext_register_readl(pon->spmi->ctrl, pon->spmi->sid,
-				     QPNP_PON_KPDPWR_S2_CNTL2(pon), &val, 1);
+	rc = regmap_read(pon->regmap, QPNP_PON_KPDPWR_S2_CNTL2(pon), &val);
 	if (rc) {
-		dev_err(&pon->spmi->dev, "Unable to pon_dbc_ctl rc=%d\n", rc);
+		dev_err(&pon->pdev->dev, "Unable to pon_dbc_ctl rc=%d\n", rc);
 		return rc;
 	}
 
@@ -551,7 +550,7 @@ static ssize_t qpnp_kpdpwr_reset_store(struct device *dev,
 	rc = qpnp_pon_masked_write(pon, QPNP_PON_KPDPWR_S2_CNTL2(pon),
 				   QPNP_PON_S2_RESET_ENABLE, value);
 	if (rc) {
-		dev_err(&pon->spmi->dev, "Unable to configure kpdpwr reset\n");
+		dev_err(&pon->pdev->dev, "Unable to configure kpdpwr reset\n");
 		return rc;
 	}
 
@@ -840,16 +839,15 @@ EXPORT_SYMBOL(qpnp_pon_is_warm_reset);
 int qpnp_pon_is_ps_hold_reset(void)
 {
 	int rc;
-	u8 reg = 0;
+	uint reg = 0;
 	struct qpnp_pon *pon = sys_reset_dev;
 
 	if (!pon)
 		return 0;
 
-	rc = spmi_ext_register_readl(pon->spmi->ctrl, pon->spmi->sid,
-				     QPNP_POFF_REASON1(pon), &reg, 1);
+	rc = regmap_read(pon->regmap, QPNP_POFF_REASON1(pon), &reg);
 	if (rc) {
-		dev_err(&pon->spmi->dev, "Unable to read addr=%x, rc(%d)\n",
+		dev_err(&pon->pdev->dev, "Unable to read addr=%x, rc(%d)\n",
 			QPNP_POFF_REASON1(pon), rc);
 		return 0;
 	}
@@ -858,12 +856,11 @@ int qpnp_pon_is_ps_hold_reset(void)
 	if (reg & 0x2)
 		return 1;
 
-	dev_info(&pon->spmi->dev, "hw_reset reason1 is 0x%x\n", reg);
+	dev_info(&pon->pdev->dev, "hw_reset reason1 is 0x%x\n", reg);
 
-	rc = spmi_ext_register_readl(pon->spmi->ctrl, pon->spmi->sid,
-				     QPNP_POFF_REASON2(pon), &reg, 1);
+	rc = regmap_read(pon->regmap, QPNP_POFF_REASON2(pon), &reg);
 
-	dev_info(&pon->spmi->dev, "hw_reset reason2 is 0x%x\n", reg);
+	dev_info(&pon->pdev->dev, "hw_reset reason2 is 0x%x\n", reg);
 
 	return 0;
 }
@@ -872,16 +869,15 @@ EXPORT_SYMBOL(qpnp_pon_is_ps_hold_reset);
 int qpnp_pon_is_lpk(void)
 {
 	int rc;
-	u8 reg = 0;
+	uint reg = 0;
 	struct qpnp_pon *pon = sys_reset_dev;
 
 	if (!pon)
 		return 0;
 
-	rc = spmi_ext_register_readl(pon->spmi->ctrl, pon->spmi->sid,
-				     QPNP_POFF_REASON1(pon), &reg, 1);
+	rc = regmap_read(pon->regmap, QPNP_POFF_REASON1(pon), &reg);
 	if (rc) {
-		dev_err(&pon->spmi->dev, "Unable to read addr=%x, rc(%d)\n",
+		dev_err(&pon->pdev->dev, "Unable to read addr=%x, rc(%d)\n",
 			QPNP_POFF_REASON1(pon), rc);
 		return 0;
 	}
@@ -890,12 +886,11 @@ int qpnp_pon_is_lpk(void)
 	if (reg & 0x80)
 		return 1;
 
-	dev_info(&pon->spmi->dev, "hw_reset reason1 is 0x%x\n", reg);
+	dev_info(&pon->pdev->dev, "hw_reset reason1 is 0x%x\n", reg);
 
-	rc = spmi_ext_register_readl(pon->spmi->ctrl, pon->spmi->sid,
-				     QPNP_POFF_REASON2(pon), &reg, 1);
+	rc = regmap_read(pon->regmap, QPNP_POFF_REASON2(pon), &reg);
 
-	dev_info(&pon->spmi->dev, "hw_reset reason2 is 0x%x\n", reg);
+	dev_info(&pon->pdev->dev, "hw_reset reason2 is 0x%x\n", reg);
 
 	return 0;
 }
@@ -2484,8 +2479,7 @@ static int qpnp_pon_probe(struct platform_device *pdev)
 		dev_info(&pon->pdev->dev,
 				"PMIC@SID%d: Power-off reason: %s\n",
 				to_spmi_device(pon->pdev->dev.parent)->usid,
-				qpnp_poff_reason[index]);
-                set_poweroff_reason(index);
+				qpnp_poff_reason[index]); 
 	}
 
 	if (pon->pon_trigger_reason == PON_SMPL ||
@@ -2738,9 +2732,9 @@ static int qpnp_pon_probe(struct platform_device *pdev)
 		goto err_out;
 	}
 
-    rc = device_create_file(&spmi->dev, &dev_attr_kpdpwr_reset);
+    rc = device_create_file(&pdev->dev, &dev_attr_kpdpwr_reset);
 	if (rc) {
-		dev_err(&spmi->dev, "sys file creation failed rc: %d\n", rc);
+		dev_err(&pdev->dev, "sys file creation failed rc: %d\n", rc);
 		return rc;
 	}
 
